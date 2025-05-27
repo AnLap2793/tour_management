@@ -1,0 +1,344 @@
+import React, { useEffect } from 'react';
+import { Table, Button, Space, Modal, Form, Input, Select, Row, Col, Card, Upload, Typography, theme, Image } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import useCategories from '../../hooks/useCategories';
+
+const { Option } = Select;
+const { TextArea } = Input;
+const { Title } = Typography;
+
+function Categories() {
+  const {
+    categories,
+    loading,
+    modalVisible,
+    editingCategory,
+    pagination,
+    handleTableChange,
+    handleSearch,
+    resetSearch,
+    showModal,
+    handleModalCancel,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+    fetchCategories
+  } = useCategories();
+
+  const [form] = Form.useForm();
+  const [searchForm] = Form.useForm();
+  const { token } = theme.useToken();
+
+  const imagePlaceholder = "https://placehold.co/400x400?text=No+Image";
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  useEffect(() => {
+    if (editingCategory) {
+      form.setFieldsValue({
+        name: editingCategory.name,
+        description: editingCategory.description,
+        status: editingCategory.status
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [editingCategory, form]);
+
+  const handleModalOk = () => {
+    form.submit();
+  };
+
+  const onFinish = async (values) => {
+    const success = editingCategory
+      ? await updateCategory(editingCategory.id, values)
+      : await createCategory(values);
+    
+    if (success) {
+      handleModalCancel();
+    }
+  };
+
+  const handleDelete = async (id) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa',
+      content: 'Bạn có chắc chắn muốn xóa danh mục này?',
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        await deleteCategory(id);
+      }
+    });
+  };
+
+  const columns = [
+    {
+      title: 'Hình ảnh',
+      dataIndex: 'image',
+      key: 'image',
+      width: 120,
+      render: (image) => (
+        image ? (
+          <Image
+            src={image}
+            alt="Category"
+            style={{ 
+              width: 80,
+              height: 80,
+              objectFit: 'cover',
+              borderRadius: token.borderRadius
+            }}
+            fallback={imagePlaceholder}
+          />
+        ) : null
+      )
+    },
+    {
+      title: 'Tên danh mục',
+      dataIndex: 'name',
+      key: 'name',
+      sorter: true,
+      render: (text) => <span style={{ fontWeight: 500 }}>{text}</span>
+    },
+    {
+      title: 'Mô tả',
+      dataIndex: 'description',
+      key: 'description',
+      ellipsis: true,
+    },
+    {
+      title: 'Số tour',
+      dataIndex: 'tourCount',
+      key: 'tourCount',
+      sorter: true,
+      align: 'center',
+      render: (count) => (
+        <span style={{ 
+          color: token.colorPrimary,
+          fontWeight: 500 
+        }}>
+          {count}
+        </span>
+      )
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      sorter: true,
+      align: 'center',
+      render: (status) => (
+        <span style={{
+          color: status === 'active' ? token.colorSuccess : token.colorError,
+          fontWeight: 500
+        }}>
+          {status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
+        </span>
+      )
+    },
+    {
+      title: 'Thao tác',
+      key: 'actions',
+      align: 'center',
+      render: (_, record) => (
+        <Space>
+          <Button
+            type="primary"
+            ghost
+            icon={<EditOutlined />}
+            onClick={() => showModal(record)}
+            style={{ borderRadius: token.borderRadius }}
+          >
+            Sửa
+          </Button>
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.id)}
+            style={{ borderRadius: token.borderRadius }}
+          >
+            Xóa
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  return (
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <Title level={3} style={{ marginBottom: 24 }}>Quản lý danh mục</Title>
+        
+        <Card bordered={false}>
+          <Form
+            form={searchForm}
+            onFinish={handleSearch}
+            layout="vertical"
+          >
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item name="name" label="Tên danh mục">
+                  <Input 
+                    placeholder="Tìm kiếm theo tên danh mục"
+                    style={{ borderRadius: token.borderRadius }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="status" label="Trạng thái">
+                  <Select 
+                    allowClear 
+                    placeholder="Chọn trạng thái"
+                    style={{ borderRadius: token.borderRadius }}
+                  >
+                    <Option value="active">Hoạt động</Option>
+                    <Option value="inactive">Không hoạt động</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={24} style={{ textAlign: 'right' }}>
+                <Space>
+                  <Button 
+                    onClick={resetSearch}
+                    style={{ borderRadius: token.borderRadius }}
+                  >
+                    Đặt lại
+                  </Button>
+                  <Button 
+                    type="primary" 
+                    icon={<SearchOutlined />} 
+                    htmlType="submit"
+                    style={{ borderRadius: token.borderRadius }}
+                  >
+                    Tìm kiếm
+                  </Button>
+                </Space>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
+      </div>
+
+      <Card
+        bordered={false}
+        title={
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => showModal()}
+            style={{ borderRadius: token.borderRadius }}
+          >
+            Thêm danh mục
+          </Button>
+        }
+      >
+        <Table
+          columns={columns}
+          dataSource={categories}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            ...pagination,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total) => `Tổng cộng ${total} danh mục`
+          }}
+          onChange={handleTableChange}
+          style={{ marginTop: 16 }}
+        />
+      </Card>
+
+      <Modal
+        title={editingCategory ? 'Sửa danh mục' : 'Thêm danh mục'}
+        open={modalVisible}
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
+        okText={editingCategory ? 'Cập nhật' : 'Thêm'}
+        cancelText="Hủy"
+        width={600}
+        maskClosable={false}
+        style={{ top: 20 }}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          initialValues={{
+            status: 'active'
+          }}
+        >
+          {editingCategory && editingCategory.image && (
+            <Form.Item label="Hình ảnh hiện tại">
+              <Image
+                src={editingCategory.image}
+                alt="Current category"
+                style={{ 
+                  maxWidth: '100%',
+                  height: 200,
+                  objectFit: 'cover',
+                  borderRadius: token.borderRadius
+                }}
+                fallback={imagePlaceholder}
+              />
+            </Form.Item>
+          )}
+
+          <Form.Item
+            name="name"
+            label="Tên danh mục"
+            rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
+          >
+            <Input style={{ borderRadius: token.borderRadius }} />
+          </Form.Item>
+
+          <Form.Item
+            name="description"
+            label="Mô tả"
+          >
+            <TextArea 
+              rows={4} 
+              style={{ borderRadius: token.borderRadius }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="image"
+            label="Hình ảnh"
+            valuePropName="fileList"
+            getValueFromEvent={e => e?.fileList}
+          >
+            <Upload
+              maxCount={1}
+              beforeUpload={() => false}
+              accept="image/*"
+              listType="picture-card"
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Tải lên</div>
+              </div>
+            </Upload>
+          </Form.Item>
+
+          <Form.Item
+            name="status"
+            label="Trạng thái"
+            rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
+          >
+            <Select style={{ borderRadius: token.borderRadius }}>
+              <Option value="active">Hoạt động</Option>
+              <Option value="inactive">Không hoạt động</Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
+}
+
+export default Categories;

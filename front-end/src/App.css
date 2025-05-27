@@ -1,0 +1,23 @@
+/* Reset default margins and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Remove padding from Ant Design Layout components */
+  .ant-layout {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .ant-layout-content {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Ensure full height */
+  html, body, #root {
+    height: 100%;
+  }
+  
