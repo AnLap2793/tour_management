@@ -1,22 +1,23 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
   Unique,
+  PrimaryColumn,
 } from 'typeorm';
-import { User } from 'src/entities/user.entity';
-import { Tour } from 'src/entities/tour.entity';
-import { TourSchedule } from 'src/entities/tour-schedule.entity';
+import { User } from './user.entity';
+import { Tour } from './tour.entity';
+import { TourSchedule } from './tour-schedule.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity('bookings')
 @Unique(['transactionId'])
 export class Booking {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string = uuidv4();
 
   @Column()
   userId: number;

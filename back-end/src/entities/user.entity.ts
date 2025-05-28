@@ -1,13 +1,14 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Booking } from 'src/entities/booking.entity';
-import { Review } from 'src/entities/review.entity';
+import { Booking } from './booking.entity';
+import { Review } from './review.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 export enum UserRole {
   USER = 'user',
@@ -21,8 +22,8 @@ export enum UserStatus {
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string = uuidv4();
 
   @Column({ nullable: false })
   name: string;

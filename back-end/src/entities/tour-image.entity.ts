@@ -1,18 +1,18 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { Tour } from 'src/entities/tour.entity';
-
+import { Tour } from './tour.entity';
+import { v4 as uuidv4 } from 'uuid';
 @Entity('tour_images')
 export class TourImage {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string = uuidv4();
 
   @Column()
   tourId: number;

@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   ManyToOne,
   OneToMany,
@@ -8,8 +8,9 @@ import {
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { Tour } from 'src/entities/tour.entity';
-import { Booking } from 'src/entities/booking.entity';
+import { Tour } from './tour.entity';
+import { Booking } from './booking.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 export enum TourScheduleStatus {
   AVAILABLE = 'available',
@@ -19,8 +20,8 @@ export enum TourScheduleStatus {
 
 @Entity('tourschedules')
 export class TourSchedule {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string = uuidv4();
 
   @Column()
   tourId: number;

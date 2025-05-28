@@ -1,19 +1,20 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
   Unique,
 } from 'typeorm';
-import { Tour } from 'src/entities/tour.entity';
+import { Tour } from './tour.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity('departurelocations')
 @Unique(['name'])
 export class DepartureLocation {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string = uuidv4();
 
   @Column({ type: 'varchar', nullable: false })
   name: string;
