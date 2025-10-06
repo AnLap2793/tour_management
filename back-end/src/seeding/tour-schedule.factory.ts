@@ -2,11 +2,31 @@ import { setSeederFactory } from 'typeorm-extension';
 import { TourSchedule } from '../entities/tour-schedule.entity';
 import { faker } from '@faker-js/faker';
 import { TourScheduleStatus } from '../entities/tour-schedule.entity';
+import { DataSource } from 'typeorm';
 
-export const TourScheduleFactory = setSeederFactory(TourSchedule, () => {
+let dataSource: DataSource;
+let tourIds: string[] = [];
+
+export const initializeDataSource = (ds: DataSource) => {
+  dataSource = ds;
+};
+
+export const TourScheduleFactory = setSeederFactory(TourSchedule, async () => {
   const tourSchedule = new TourSchedule();
 
-  tourSchedule.tourId = faker.number.int({ min: 1, max: 10 });
+  // load tour ids once
+  if (!tourIds.length) {
+    if (!dataSource)
+      throw new Error('DataSource not initialized for TourScheduleFactory');
+    const tours = await dataSource.getRepository('Tour').find();
+    tourIds = tours.map((t: any) => t.id);
+    if (!tourIds.length)
+      throw new Error(
+        'No tours found. Ensure tours are seeded before schedules.',
+      );
+  }
+
+  tourSchedule.tourId = faker.helpers.arrayElement(tourIds);
   tourSchedule.departureDate = faker.date.future();
   tourSchedule.returnDate = faker.date.future();
   tourSchedule.availableSeats = faker.number.int({ min: 0, max: 10 });

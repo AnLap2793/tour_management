@@ -1,12 +1,41 @@
 import { setSeederFactory } from 'typeorm-extension';
 import { Booking } from '../entities/booking.entity';
 import { faker } from '@faker-js/faker';
+import { DataSource } from 'typeorm';
 
-export const BookingFactory = setSeederFactory(Booking, () => {
+let dataSource: DataSource;
+let userIds: string[] = [];
+let tourIds: string[] = [];
+let scheduleIds: string[] = [];
+
+export const initializeDataSource = (ds: DataSource) => {
+  dataSource = ds;
+};
+
+export const BookingFactory = setSeederFactory(Booking, async () => {
   const booking = new Booking();
-  booking.userId = faker.number.int({ min: 1, max: 10 });
-  booking.tourId = faker.number.int({ min: 1, max: 10 });
-  booking.scheduleId = faker.number.int({ min: 1, max: 10 });
+
+  if (!dataSource)
+    throw new Error('DataSource not initialized for BookingFactory');
+
+  if (!userIds.length) {
+    const users = await dataSource.getRepository('User').find();
+    userIds = users.map((u: any) => u.id);
+  }
+
+  if (!tourIds.length) {
+    const tours = await dataSource.getRepository('Tour').find();
+    tourIds = tours.map((t: any) => t.id);
+  }
+
+  if (!scheduleIds.length) {
+    const schedules = await dataSource.getRepository('TourSchedule').find();
+    scheduleIds = schedules.map((s: any) => s.id);
+  }
+
+  booking.userId = faker.helpers.arrayElement(userIds);
+  booking.tourId = faker.helpers.arrayElement(tourIds);
+  booking.scheduleId = faker.helpers.arrayElement(scheduleIds);
   booking.numberOfAdults = faker.number.int({ min: 1, max: 5 });
   booking.numberOfChildren = faker.number.int({ min: 0, max: 3 });
   booking.numberOfInfants = faker.number.int({ min: 0, max: 2 });

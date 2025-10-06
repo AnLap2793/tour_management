@@ -6,7 +6,6 @@ import { TourSchedule } from 'src/entities/tour-schedule.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TourSchedule])],
-
   controllers: [TourScheduleController],
   providers: [TourScheduleService],
 })

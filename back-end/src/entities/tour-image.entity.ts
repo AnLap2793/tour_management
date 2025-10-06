@@ -15,7 +15,7 @@ export class TourImage {
   id: string = uuidv4();
 
   @Column()
-  tourId: number;
+  tourId: string;
 
   @Column({ type: 'varchar', nullable: false })
   image: string;

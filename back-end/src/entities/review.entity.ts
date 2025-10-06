@@ -15,11 +15,11 @@ export class Review {
   @PrimaryColumn()
   id: string = uuidv4();
 
-  @Column({ type: 'int', nullable: false })
-  userId: number;
+  @Column({ type: 'varchar', nullable: false })
+  userId: string;
 
-  @Column({ type: 'int', nullable: false })
-  tourId: number;
+  @Column({ type: 'varchar', nullable: false })
+  tourId: string;
 
   @Column({ type: 'int', nullable: false })
   rating: number;

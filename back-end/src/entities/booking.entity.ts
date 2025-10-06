@@ -20,13 +20,13 @@ export class Booking {
   id: string = uuidv4();
 
   @Column()
-  userId: number;
+  userId: string;
 
   @Column()
-  tourId: number;
+  tourId: string;
 
   @Column()
-  scheduleId: number;
+  scheduleId: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   bookingDate: Date;

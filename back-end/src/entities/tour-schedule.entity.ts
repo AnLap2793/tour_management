@@ -24,7 +24,7 @@ export class TourSchedule {
   id: string = uuidv4();
 
   @Column()
-  tourId: number;
+  tourId: string;
 
   @Column({ type: 'timestamp' })
   departureDate: Date;
