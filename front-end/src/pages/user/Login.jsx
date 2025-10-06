@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Card, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
-import { authService } from '../../services/authService';
-import { userService } from '../../services/userService';
+import React, { useState } from "react";
+import { Form, Input, Button, Card, message } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../../services/authService";
+import { userService } from "../../services/userService";
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -13,29 +13,32 @@ function Login() {
     try {
       setLoading(true);
       const response = await authService.login(values);
-      const { token, user } = response.data;
+      console.log(response);
+      const { accessToken, user } = response;
 
-      userService.setAuthToken(token);
+      userService.setAuthToken(accessToken);
       userService.setUserData(user);
-      message.success('Đăng nhập thành công');
-      navigate('/');
+      message.success("Đăng nhập thành công");
+      navigate("/");
     } catch (error) {
-      message.error(error.response?.data?.message || 'Đăng nhập thất bại');
+      message.error(error.response?.message || "Đăng nhập thất bại");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{
-      height: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#f0f2f5'
-    }}>
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f0f2f5",
+      }}
+    >
       <Card style={{ width: 400 }}>
-        <h1 style={{ textAlign: 'center', marginBottom: 24 }}>Đăng nhập</h1>
+        <h1 style={{ textAlign: "center", marginBottom: 24 }}>Đăng nhập</h1>
         <Form
           name="login"
           onFinish={onFinish}
@@ -45,20 +48,16 @@ function Login() {
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: 'Vui lòng nhập email!' },
-              { type: 'email', message: 'Email không hợp lệ!' }
+              { required: true, message: "Vui lòng nhập email!" },
+              { type: "email", message: "Email không hợp lệ!" },
             ]}
           >
-            <Input 
-              prefix={<UserOutlined />} 
-              placeholder="Email" 
-              size="large"
-            />
+            <Input prefix={<UserOutlined />} placeholder="Email" size="large" />
           </Form.Item>
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
           >
             <Input.Password
               prefix={<LockOutlined />}
@@ -68,9 +67,9 @@ function Login() {
           </Form.Item>
 
           <Form.Item>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
+            <Button
+              type="primary"
+              htmlType="submit"
               loading={loading}
               block
               size="large"
@@ -79,7 +78,7 @@ function Login() {
             </Button>
           </Form.Item>
 
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: "center" }}>
             Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
           </div>
         </Form>

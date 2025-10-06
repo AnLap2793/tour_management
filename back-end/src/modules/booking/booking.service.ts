@@ -10,7 +10,7 @@ export class BookingService {
     private readonly bookingRepository: Repository<Booking>,
   ) {}
 
-  async findAll() {
+  findAll() {
     return this.bookingRepository.find();
   }
 }
